@@ -359,7 +359,7 @@ function Calculator() {
                 className="range-input"
                 min="100000"
                 max="10000000"
-                step="50000"
+                step="1000"
                 value={loanAmount}
                 onChange={(e) => setLoanAmount(e.target.value)}
               />
@@ -385,7 +385,7 @@ function Calculator() {
                 className="range-input"
                 min="5"
                 max="18"
-                step="0.1"
+                step="0.05"
                 value={interestRate}
                 onChange={(e) => setInterestRate(e.target.value)}
               />
@@ -395,7 +395,6 @@ function Calculator() {
                 value={interestRate}
                 onChange={(e) => setInterestRate(e.target.value)}
                 placeholder="Enter interest rate"
-                step="0.1"
                 required
               />
             </div>
@@ -412,7 +411,7 @@ function Calculator() {
                 className="range-input"
                 min="5000"
                 max="100000"
-                step="1000"
+                step="250"
                 value={emi}
                 onChange={(e) => setEmi(e.target.value)}
               />
@@ -435,14 +434,17 @@ function Calculator() {
             <label className="input-label">
               Monthly Savings: <span className="input-value">₹{formatNumberIndian(savings)}</span>
             </label>
-            <p className="input-description">Additional amount you can save monthly after all expenses (excluding EMI)</p>
+            <p className="input-description">Amount you can save each month after all expenses (including EMI). <br/>
+              • EMI + Invest: This savings is invested each month. After loan repayment, the full amount (EMI + this savings) is invested each month <br/>
+              • Debt-First: This savings is used to pay off the loan. After loan repayment, the full amount (EMI + this savings) is invested each month.
+            </p>
             <div className="input-container">
               <input
                 type="range"
                 className="range-input"
                 min="5000"
                 max="200000"
-                step="2500"
+                step="250"
                 value={savings}
                 onChange={(e) => setSavings(e.target.value)}
               />
@@ -468,7 +470,7 @@ function Calculator() {
                 className="range-input"
                 min="6"
                 max="25"
-                step="0.5"
+                step="0.05"
                 value={investmentReturn}
                 onChange={(e) => setInvestmentReturn(e.target.value)}
               />
@@ -478,7 +480,6 @@ function Calculator() {
                 value={investmentReturn}
                 onChange={(e) => setInvestmentReturn(e.target.value)}
                 placeholder="Enter expected return"
-                step="0.5"
                 required
               />
             </div>
@@ -495,7 +496,7 @@ function Calculator() {
                 className="range-input"
                 min="0"
                 max="15"
-                step="0.5"
+                step="0.05"
                 value={inflationRate}
                 onChange={(e) => setInflationRate(e.target.value)}
               />
@@ -505,7 +506,6 @@ function Calculator() {
                 value={inflationRate}
                 onChange={(e) => setInflationRate(e.target.value)}
                 placeholder="Enter growth rate"
-                step="0.5"
                 required
               />
             </div>
