@@ -219,9 +219,15 @@ body {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.button-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
 .submit-button {
-  width: 100%;
-  padding: 1rem 2rem;
+  padding: 1rem 3rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
@@ -231,7 +237,7 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-  margin-top: 1rem;
+  min-width: 200px;
 }
 
 .submit-button:hover {

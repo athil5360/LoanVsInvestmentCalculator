@@ -538,9 +538,11 @@ function Calculator() {
           </div>
         </div>
 
-        <button type="submit" className="submit-button">
-          {isFirstRun ? '🚀 Calculate & Compare' : '🔄 Recalculate'}
-        </button>
+        <div className="button-container">
+          <button type="submit" className="submit-button">
+            {isFirstRun ? '🚀 Calculate & Compare' : '🔄 Recalculate'}
+          </button>
+        </div>
       </form>
 
       {error && <div className="error">⚠️ {error}</div>}
