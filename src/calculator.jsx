@@ -15,19 +15,14 @@ import {
 const formatNumberIndian = (number) => {
   return new Intl.NumberFormat('en-IN').format(number);
 };
-/*
-const formatMonthsToYearsAndMonths = (months) => {
-  const years = Math.floor(months / 12);
-  const remainingMonths = months % 12;
-  return `${years} years and ${remainingMonths} months`;
-};*/
+
 const removeLeadingZeroes = (value) => {
   return value.replace(/^0+/, '') || '0';
 };
+
 const isValidNumber = (value) => {
   return !isNaN(value) && value.trim() !== '';
 };
-
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -173,21 +168,20 @@ const calculateFinancialScenarios = (data) => {
 };
 
 function Calculator() {
-  const [loanAmount, setLoanAmount] = useState(null); // default value
-  const [interestRate, setInterestRate] = useState(null); // default value
-  const [emi, setEmi] = useState(null); // default value
-  const [savings, setSavings] = useState(null); // default value
-  const [investmentReturn, setInvestmentReturn] = useState(null); // default value
-  const [inflationRate, setInflationRate] = useState(null); // default value
-  const [investmentHorizon, setInvestmentHorizon] = useState(null); // default value
+  const [loanAmount, setLoanAmount] = useState(2500000);
+  const [interestRate, setInterestRate] = useState(8.5);
+  const [emi, setEmi] = useState(25000);
+  const [savings, setSavings] = useState(30000);
+  const [investmentReturn, setInvestmentReturn] = useState(12);
+  const [inflationRate, setInflationRate] = useState(5);
+  const [investmentHorizon, setInvestmentHorizon] = useState(15);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const [isFirstRun, setIsFirstRun] = useState(true);
 
-  
   const handleSubmit = (event) => {
     event.preventDefault();
-    setError(null); // Reset error state
+    setError(null);
 
     try {
       const data = calculateFinancialScenarios({
@@ -222,283 +216,397 @@ function Calculator() {
       labels: Array.from({ length: investmentHorizon * 12 }, (_, i) => i + 1),
       datasets: [
         {
-          label: 'Total Investment (EMI and Invest)',
+          label: 'Investment Value (EMI + Invest)',
           data: results.investmentValuesOption1,
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
           pointRadius: 0,
+          borderWidth: 3,
         },
         {
-          label: 'Total Investment (Invest After Loan Payoff)',
+          label: 'Investment Value (Invest After Payoff)',
           data: results.investmentValuesOption2,
-          borderColor: 'rgba(153, 102, 255, 1)',
-          backgroundColor: 'rgba(153, 102, 255, 0.2)',
+          borderColor: '#8b5cf6',
+          backgroundColor: 'rgba(139, 92, 246, 0.1)',
           pointRadius: 0,
+          borderWidth: 3,
         },
         {
-          label: 'Loan Outstanding (EMI and Invest)',
+          label: 'Loan Outstanding (EMI + Invest)',
           data: results.loanOutstandingOption1,
-          borderColor: 'rgba(255, 99, 132, 1)',
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
           pointRadius: 0,
+          borderWidth: 2,
+          borderDash: [5, 5],
         },
         {
-          label: 'Loan Outstanding (Invest After Loan Payoff)',
+          label: 'Loan Outstanding (Invest After Payoff)',
           data: results.loanOutstandingOption2,
-          borderColor: 'rgba(255, 159, 64, 1)',
-          backgroundColor: 'rgba(255, 159, 64, 0.2)',
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
           pointRadius: 0,
+          borderWidth: 2,
+          borderDash: [5, 5],
         },
       ],
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            min: minYValue,
-            max: maxYValue,
+    };
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: {
+            size: 12,
           },
         },
       },
-    };
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: 'white',
+        bodyColor: 'white',
+        borderColor: '#667eea',
+        borderWidth: 1,
+      },
+    },
+    scales: {
+      x: {
+        display: true,
+        title: {
+          display: true,
+          text: 'Months',
+          font: {
+            size: 14,
+            weight: 'bold',
+          },
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+      },
+      y: {
+        display: true,
+        title: {
+          display: true,
+          text: 'Amount (₹)',
+          font: {
+            size: 14,
+            weight: 'bold',
+          },
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          callback: function(value) {
+            return '₹' + formatNumberIndian(value);
+          },
+        },
+      },
+    },
+    interaction: {
+      mode: 'nearest',
+      axis: 'x',
+      intersect: false,
+    },
   };
 
   return (
     <div className="container">
-      <h1>Paying Off Debt vs. Investing?</h1>
-      <p>I was confused about whether to prioritize repaying my loan quickly or to start investing right away. To make an informed decision, I evaluated the potential outcomes of two different strategies:</p>
-      <p><b>
-        EMI and Invest:</b> Continue paying your regular EMI while investing the rest of your savings.</p>
-      <p><b>
-        Invest After Loan Payoff:</b> Use all your monthly savings to pay off your loan as quickly as possible, and then start investing.
-      </p>
-        <p>
-        Sharing the tool here. Enter your loan details, savings, and other relevant financial information to see how these two strategies compare for you. 
-      </p>
-      <p>
-    <i>
-        Rest assured, your data is not stored anywhere. The calculations are done entirely in your browser, ensuring complete privacy.
-      </i></p>
+      <div className="header">
+        <h1>💰 Debt vs Investment Calculator</h1>
+        <p className="subtitle">
+          Make smarter financial decisions by comparing two strategies: paying minimum EMI while investing, 
+          or aggressively paying off debt before investing. Get personalized insights based on your financial situation.
+        </p>
+      </div>
+
+      <div className="strategy-cards">
+        <div className="strategy-card">
+          <h3>🎯 EMI + Invest Strategy</h3>
+          <p>Continue paying your regular EMI while investing the rest of your savings in the market. This approach leverages compound growth while maintaining debt payments.</p>
+        </div>
+        <div className="strategy-card">
+          <h3>🚀 Debt-First Strategy</h3>
+          <p>Use all available savings to pay off your loan as quickly as possible, then redirect those payments to investments. This eliminates interest burden first.</p>
+        </div>
+      </div>
+
+      <div className="privacy-notice">
+        <p>🔒 Your data is completely private - all calculations happen in your browser and nothing is stored on our servers.</p>
+      </div>
+
       <form onSubmit={handleSubmit} className="form">
-        <div className="form-side">
+        <div className="form-section">
+          <h3><span className="section-icon">💳</span>Loan Details</h3>
+          
           <div className="form-group">
-            <label htmlFor="loanAmount">
-              Loan Amount: ₹{formatNumberIndian(loanAmount)}
-              </label>
-              <span className="description">How much you owe to your bank as of now</span>
-            <input
-              type="range"
-              id="loanAmount"
-              min="0"
-              max="10000000"
-              step="10000"
-              value={loanAmount}
-              onChange={(e) => setLoanAmount(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              value={loanAmount}
-              onChange={(e) => setLoanAmount(e.target.value)}
-              placeholder="Enter Loan Amount"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="interestRate">
-              Interest Rate (%): {interestRate}
-              </label>
-              <span className="description">The scary percentage that makes us avoid looking at our loan statement</span>
-            <input
-              type="range"
-              id="interestRate"
-              min="0"
-              max="15"
-              step="0.1"
-              value={interestRate}
-              onChange={(e) => setInterestRate(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              value={interestRate}
-              onChange={(e) => setInterestRate(e.target.value)}
-              placeholder="Enter Interest Rate"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="emi">
-              EMI: ₹{formatNumberIndian(emi)}
+            <label className="input-label">
+              Loan Amount: <span className="input-value">₹{formatNumberIndian(loanAmount)}</span>
             </label>
-              <span className="description">The minimum amount you need to pay as EMI towards your loan</span>
-            <input
-              type="range"
-              id="emi"
-              min="0"
-              max="50000"
-              step="250"
-              value={emi}
-              onChange={(e) => setEmi(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              value={emi}
-              onChange={(e) => setEmi(e.target.value)}
-              placeholder="Enter Minimum EMI"
-              required
-            />
+            <p className="input-description">Current outstanding loan balance that you owe to the bank</p>
+            <div className="input-container">
+              <input
+                type="range"
+                className="range-input"
+                min="100000"
+                max="10000000"
+                step="50000"
+                value={loanAmount}
+                onChange={(e) => setLoanAmount(e.target.value)}
+              />
+              <input
+                type="number"
+                className="number-input"
+                value={loanAmount}
+                onChange={(e) => setLoanAmount(e.target.value)}
+                placeholder="Enter loan amount"
+                required
+              />
+            </div>
           </div>
+
           <div className="form-group">
-            <label htmlFor="savings">
-              Monthly Savings: ₹{formatNumberIndian(savings)}
-              </label>
-              <span className="description">What's your expected savings after all expenses including emi</span>
-            <input
-              type="range"
-              id="savings"
-              min="0"
-              max="150000"
-              step="500"
-              value={savings}
-              onChange={(e) => setSavings(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              value={savings}
-              onChange={(e) => setSavings(e.target.value)}
-              placeholder="Enter Monthly Savings"
-              required
-            />
+            <label className="input-label">
+              Interest Rate: <span className="input-value">{interestRate}%</span>
+            </label>
+            <p className="input-description">Annual interest rate charged by your lender</p>
+            <div className="input-container">
+              <input
+                type="range"
+                className="range-input"
+                min="5"
+                max="18"
+                step="0.1"
+                value={interestRate}
+                onChange={(e) => setInterestRate(e.target.value)}
+              />
+              <input
+                type="number"
+                className="number-input"
+                value={interestRate}
+                onChange={(e) => setInterestRate(e.target.value)}
+                placeholder="Enter interest rate"
+                step="0.1"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="input-label">
+              Monthly EMI: <span className="input-value">₹{formatNumberIndian(emi)}</span>
+            </label>
+            <p className="input-description">Minimum monthly payment required for your loan</p>
+            <div className="input-container">
+              <input
+                type="range"
+                className="range-input"
+                min="5000"
+                max="100000"
+                step="1000"
+                value={emi}
+                onChange={(e) => setEmi(e.target.value)}
+              />
+              <input
+                type="number"
+                className="number-input"
+                value={emi}
+                onChange={(e) => setEmi(e.target.value)}
+                placeholder="Enter EMI amount"
+                required
+              />
+            </div>
           </div>
         </div>
-        <div className="form-side">
+
+        <div className="form-section">
+          <h3><span className="section-icon">📈</span>Investment & Savings</h3>
+          
           <div className="form-group">
-            <label htmlFor="investmentReturn">
-              Investment Return Rate (%): {investmentReturn}
-              </label>
-              <span className="description">The expected rate of return from your investment.</span>
-            <input
-              type="range"
-              id="investmentReturn"
-              min="0"
-              max="50"
-              step="0.1"
-              value={investmentReturn}
-              onChange={(e) => setInvestmentReturn(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              value={investmentReturn}
-              onChange={(e) => setInvestmentReturn(e.target.value)}
-              placeholder="Enter Investment Return Rate"
-              required
-            />
+            <label className="input-label">
+              Monthly Savings: <span className="input-value">₹{formatNumberIndian(savings)}</span>
+            </label>
+            <p className="input-description">Additional amount you can save monthly after all expenses (excluding EMI)</p>
+            <div className="input-container">
+              <input
+                type="range"
+                className="range-input"
+                min="5000"
+                max="200000"
+                step="2500"
+                value={savings}
+                onChange={(e) => setSavings(e.target.value)}
+              />
+              <input
+                type="number"
+                className="number-input"
+                value={savings}
+                onChange={(e) => setSavings(e.target.value)}
+                placeholder="Enter monthly savings"
+                required
+              />
+            </div>
           </div>
+
           <div className="form-group">
-            <label htmlFor="inflationRate">
-              Savings growth rate (%): {inflationRate}
-              </label>
-              <span className="description">The rate at which your savings is expected to increase annually. If it doesn’t, just put 0; thanks to our tiny appraisals.</span>
-            <input
-              type="range"
-              id="inflationRate"
-              min="0"
-              max="10"
-              step="0.1"
-              value={inflationRate}
-              onChange={(e) => setInflationRate(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              value={inflationRate}
-              onChange={(e) => setInflationRate(e.target.value)}
-              placeholder="Enter Savings Growth Rate"
-              required
-            />
+            <label className="input-label">
+              Expected Investment Return: <span className="input-value">{investmentReturn}%</span>
+            </label>
+            <p className="input-description">Annual return rate you expect from your investments (equity/mutual funds typically 10-15%)</p>
+            <div className="input-container">
+              <input
+                type="range"
+                className="range-input"
+                min="6"
+                max="25"
+                step="0.5"
+                value={investmentReturn}
+                onChange={(e) => setInvestmentReturn(e.target.value)}
+              />
+              <input
+                type="number"
+                className="number-input"
+                value={investmentReturn}
+                onChange={(e) => setInvestmentReturn(e.target.value)}
+                placeholder="Enter expected return"
+                step="0.5"
+                required
+              />
+            </div>
           </div>
+
           <div className="form-group">
-            <label htmlFor="investmentHorizon">
-              Investment Horizon (Years): {investmentHorizon}
-              </label>
-              <span className="description">When you’re going to look at all the money you have and say, "Enough!"</span>
-            <input
-              type="range"
-              id="investmentHorizon"
-              min="0"
-              max="30"
-              step="1"
-              value={investmentHorizon}
-              onChange={(e) => setInvestmentHorizon(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              value={investmentHorizon}
-              onChange={(e) => setInvestmentHorizon(e.target.value)}
-              placeholder="Enter Investment Horizon"
-              required
-            />
+            <label className="input-label">
+              Savings Growth Rate: <span className="input-value">{inflationRate}%</span>
+            </label>
+            <p className="input-description">Annual rate at which your savings capacity increases (salary hikes, bonuses)</p>
+            <div className="input-container">
+              <input
+                type="range"
+                className="range-input"
+                min="0"
+                max="15"
+                step="0.5"
+                value={inflationRate}
+                onChange={(e) => setInflationRate(e.target.value)}
+              />
+              <input
+                type="number"
+                className="number-input"
+                value={inflationRate}
+                onChange={(e) => setInflationRate(e.target.value)}
+                placeholder="Enter growth rate"
+                step="0.5"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="input-label">
+              Investment Horizon: <span className="input-value">{investmentHorizon} years</span>
+            </label>
+            <p className="input-description">Time period for your financial planning and wealth building goals</p>
+            <div className="input-container">
+              <input
+                type="range"
+                className="range-input"
+                min="5"
+                max="30"
+                step="1"
+                value={investmentHorizon}
+                onChange={(e) => setInvestmentHorizon(e.target.value)}
+              />
+              <input
+                type="number"
+                className="number-input"
+                value={investmentHorizon}
+                onChange={(e) => setInvestmentHorizon(e.target.value)}
+                placeholder="Enter time horizon"
+                required
+              />
+            </div>
           </div>
         </div>
+
         <button type="submit" className="submit-button">
-          {isFirstRun ? 'Calculate' : 'Refresh'}
+          {isFirstRun ? '🚀 Calculate & Compare' : '🔄 Recalculate'}
         </button>
       </form>
 
-      {error && <div className="error">{error}</div>}
+      {error && <div className="error">⚠️ {error}</div>}
 
       {results && (
         <div className="results">
-          <h2>Results</h2>
-          <p>Here is the calculation for the two scenarios based on your inputs</p>
-          <p><b>
-            EMI and Invest:</b> Continue paying your regular EMI while investing the rest of your savings.</p>
-          <p><b>
-            Invest After Loan Payoff:</b> Use all your monthly savings to pay off your loan as quickly as possible, and then start investing.
-          </p>
+          <div className="results-header">
+            <h2>📊 Financial Strategy Comparison</h2>
+            <p className="results-description">
+              Here's how the two strategies perform based on your inputs. The table below shows key metrics 
+              to help you make an informed decision about your financial future.
+            </p>
+          </div>
 
           <table className="comparison-table">
             <thead>
               <tr>
-                <th></th>
-                <th>EMI and Invest</th>
-                <th> Invest After Loan Payoff</th>
+                <th>Metric</th>
+                <th>🎯 EMI + Invest</th>
+                <th>🚀 Debt-First</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td data-label="">Total interest gifted to your bank</td>
-                <td data-label="EMI and Invest">₹{formatNumberIndian(results.totalInterestPaidOption1.toFixed(2))}</td>
-                <td data-label="Invest After Loan Payoff">₹{formatNumberIndian(results.totalInterestPaidOption2.toFixed(2))}</td>
+                <td data-label="Metric">Total Interest Paid to Bank</td>
+                <td data-label="EMI + Invest">₹{formatNumberIndian(results.totalInterestPaidOption1.toFixed(0))}</td>
+                <td data-label="Debt-First">₹{formatNumberIndian(results.totalInterestPaidOption2.toFixed(0))}</td>
               </tr>
               <tr>
-                <td>Month when you’ll be Debt-Free</td>
-                <td data-label="EMI and Invest">
+                <td data-label="Metric">Months to Become Debt-Free</td>
+                <td data-label="EMI + Invest">
                   {results.monthsToRepayLoanOption1 > investmentHorizon * 12
-                    ? "You can't close the loan within the given horizon. Time to rethink those financial strategies!"
-                    : `${results.monthsToRepayLoanOption1}`}
+                    ? "⚠️ Loan won't be cleared in given timeframe"
+                    : `${results.monthsToRepayLoanOption1} months`}
                 </td>
-                <td data-label="Invest After Loan Payoff">
+                <td data-label="Debt-First">
                   {results.monthsToRepayLoanOption2 > investmentHorizon * 12
-                    ? "You can't close the loan within the given horizon. Time to rethink those financial strategies!"
-                    : `${results.monthsToRepayLoanOption2}`}
+                    ? "⚠️ Loan won't be cleared in given timeframe"
+                    : `${results.monthsToRepayLoanOption2} months`}
                 </td>
               </tr>
               <tr>
-                <td>Total cash pile after the given investment horizon</td>
-                <td data-label="EMI and Invest">₹{formatNumberIndian(results.futureValueInvestmentOption1.toFixed(2))}</td>
-                <td data-label="Invest After Loan Payoff">₹{formatNumberIndian(results.futureValueInvestmentOption2.toFixed(2))}</td>
+                <td data-label="Metric">Total Wealth After {investmentHorizon} Years</td>
+                <td data-label="EMI + Invest">₹{formatNumberIndian(results.futureValueInvestmentOption1.toFixed(0))}</td>
+                <td data-label="Debt-First">₹{formatNumberIndian(results.futureValueInvestmentOption2.toFixed(0))}</td>
+              </tr>
+              <tr>
+                <td data-label="Metric"><strong>Net Advantage</strong></td>
+                <td data-label="EMI + Invest">
+                  {results.futureValueInvestmentOption1 > results.futureValueInvestmentOption2 
+                    ? `✅ Better by ₹${formatNumberIndian((results.futureValueInvestmentOption1 - results.futureValueInvestmentOption2).toFixed(0))}`
+                    : `❌ Lower by ₹${formatNumberIndian((results.futureValueInvestmentOption2 - results.futureValueInvestmentOption1).toFixed(0))}`}
+                </td>
+                <td data-label="Debt-First">
+                  {results.futureValueInvestmentOption2 > results.futureValueInvestmentOption1 
+                    ? `✅ Better by ₹${formatNumberIndian((results.futureValueInvestmentOption2 - results.futureValueInvestmentOption1).toFixed(0))}`
+                    : `❌ Lower by ₹${formatNumberIndian((results.futureValueInvestmentOption1 - results.futureValueInvestmentOption2).toFixed(0))}`}
+                </td>
               </tr>
             </tbody>
           </table>
 
-          <div className="chart">
-            <Line data={createChartData()} options={createChartData().options} />
+          <div className="chart-container">
+            <div className="chart">
+              <Line data={createChartData()} options={chartOptions} />
+            </div>
           </div>
         </div>
       )}

@@ -6,6 +6,5 @@ export default function App() {
     <main>
       <Calculator />
     </main>
-    
   )
 }
