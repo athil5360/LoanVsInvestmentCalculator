@@ -45,7 +45,7 @@ No data is stored, sent, or tracked. Your financial inputs stay with you.
 
 ## ✨ Try It Live
 
-👉 [**Launch the Calculator**](#) *(insert link to your live site or GitHub Pages here)*
+👉 [**Launch the Calculator**](https://loan-vs-investment.web.app/)
 
 ---
 
